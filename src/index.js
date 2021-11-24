@@ -9,11 +9,11 @@ app.use(express.urlencoded({
 /* teste padrão */
 app.get('/', (req, res) => {
     res.send('Hello');
-})
+});
 
 /* routes  */
-require('./controller/authController')(app);
+require('./router')(app);
 
 app.listen(3000, () => {
-    console.log('Welcome to Json reader API')
-})
+    console.log('Welcome to Json reader API');
+});

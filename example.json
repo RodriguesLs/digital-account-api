@@ -1,9 +1,0 @@
-[
-    {"type": "initialize_account", "payload": {"name": "Joana Bárbara Caldeira", "document": "999.999.999-99", "available-limit": 1000}},
-    {"type": "initialize_account", "payload": {"name": "Andreia Cecília Rocha", "document": "111.111.111-11", "available-limit": 500}},
-    {"type": "transaction", "payload": {"sender-document": "999.999.999-99", "receiver-document": "111.111.111-11", "value": 300, "datetime": "2021-08-12T14:30:30Z"}},
-    {"type": "transaction", "payload": {"sender-document": "999.999.999-99", "receiver-document": "111.111.111-11", "value": 150, "datetime": "2021-08-12T14:32:08Z"}},
-    {"type": "transaction", "payload": {"sender-document": "111.111.111-11", "receiver-document": "999.999.999-99", "value": 20, "datetime": "2021-08-12T14:33:00Z"}},
-    {"type": "transaction_history", "payload": {"document": "111.111.111-11"}},
-    {"type": "transaction_history", "payload": {"document": "999.999.999-99"}}
-]
