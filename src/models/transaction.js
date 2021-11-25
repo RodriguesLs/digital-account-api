@@ -107,7 +107,3 @@ const updateReceiverHistory = (receiver_transaction, new_limit) => {
     transactions[receiver_transaction['receiver-document']] = [receiver_transaction];
   }
 }
-
-const prepareResponse = transaction => {
-  
-}

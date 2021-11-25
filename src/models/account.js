@@ -6,6 +6,10 @@ exports.getAccounts = () => {
     return accounts;
 }
 
+exports.cleanAccounts = () => {
+    accounts = [];
+}
+
 exports.create = account => {
     let response = validateAccount(account);
 
@@ -14,15 +18,17 @@ exports.create = account => {
 
 exports.updateSenderAvailableLimit = (account, debit_value) => {
     let i = accounts.findIndex(acc => acc.document === account.document);
+
     accounts[i]['available-limit'] -= debit_value;
 
     return accounts[i]['available-limit'];
 }
 
-exports.updateReceiverAvailableLimit = (account, debit_value) => {
+exports.updateReceiverAvailableLimit = (account, credit_value) => {
     let i = accounts.findIndex(acc => acc.document === account.document);
-    accounts[i]['available-limit'] += debit_value;
-
+    
+    accounts[i]['available-limit'] += credit_value;
+    
     return accounts[i]['available-limit'];
 }
 
@@ -41,15 +47,19 @@ const registerAccount = account => {
 }
 
 const validateAccount = account => {
+    if (missingParameter(account)) return violation_data('invalid_data');
+
     if (accounts.length > 0) {
         if (accountExists(account.document)) {
-            return { violation: 'account_already_initialized' }
-        } else if (missingParameter(account)) {
-            return { violation: 'invalid_data' }
+            return violation_data('account_already_initialized');
         } else {
             return registerAccount(account);
         }
     } else {
         return registerAccount(account);
     }
+}
+
+const violation_data = msg => {
+    return { violation: msg }
 }
