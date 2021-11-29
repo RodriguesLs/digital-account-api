@@ -1,7 +1,12 @@
 const account = require('../models/account');
 
 if (!transactions) {
-  var transactions = {};
+  var transactions = [];
+  var transaction_history = {};
+}
+
+exports.getQttTransactions = () => {
+  return transactions.length;
 }
 
 exports.create = transaction => {
@@ -16,15 +21,20 @@ exports.create = transaction => {
       return registerTransaction(transaction);
     }
   } else {
-    return registerTransaction(transaction);
+    console.log(accountNotExists(transaction));
+    if (accountNotExists(transaction)) {
+      return { violation: 'account_not_initialized' }
+    } else {
+      return registerTransaction(transaction);
+    }
   }
 }
 
 exports.history = document => {
   let customer_account = account.getAccounts().find(acc => acc.document === document);
-
+  
   if (customer_account) {
-    return transactions[document];
+    return transaction_history[document];
   } else {
     return { violation: 'account_not_initialized' }
   }
@@ -43,18 +53,20 @@ const registerTransaction = transaction => {
 
   let response_transaction = JSON.stringify(transaction);
 
-  updateSenderHistory(transaction);
-  updateReceiverHistory(transaction, new_receiver_limit);
+  updateSenderHistory(response_transaction);
+  updateReceiverHistory(response_transaction, new_receiver_limit);
 
   response_transaction = JSON.parse(response_transaction);
   
+  transactions.push(response_transaction);
+
   delete response_transaction['value'];
 
   return response_transaction;
 }
 
 const preventDuplicatedTransaction = transaction => {
-  let warning_transaction = transactions.find(t => {
+  let warning_transaction = transaction_history.find(t => {
     return t.value === transaction.value &&
       t['sender-document'] === transaction['sender-document'] &&
         t['receiver-document'] === transaction['receiver-document']
@@ -69,6 +81,8 @@ const preventDuplicatedTransaction = transaction => {
 
 const accountNotExists = transaction => {
   const accounts = account.getAccounts();
+
+  if (accounts.length == 0) return true;
 
   let sender = accounts.filter(acc => acc.document == transaction['sender-document']).length > 0;
   let receiver = accounts.filter(acc => acc.document == transaction['receiver-document']).length > 0;
@@ -85,25 +99,27 @@ const insufficientLimit = transaction => {
 }
 
 const updateSenderHistory = sender_transaction => {
-  sender_transactions = transactions[sender_transaction['sender-document']]
+  sender_transaction = JSON.parse(sender_transaction);
+  sender_transactions = transaction_history[sender_transaction['sender-document']]
 
   sender_transaction.value = -sender_transaction.value;
 
   if (sender_transactions) {
-    transactions[sender_transaction['sender-document']].push(sender_transaction)
+    transaction_history[sender_transaction['sender-document']].push(sender_transaction)
   } else {
-    transactions[sender_transaction['sender-document']] = [sender_transaction];
+    transaction_history[sender_transaction['sender-document']] = [sender_transaction];
   }
 }
 
 const updateReceiverHistory = (receiver_transaction, new_limit) => {
-  receiver_transactions = transactions[receiver_transaction['receiver-document']];
+  receiver_transaction = JSON.parse(receiver_transaction);
+  receiver_transactions = transaction_history[receiver_transaction['receiver-document']];
 
   receiver_transaction['available-limit'] = new_limit;
 
   if (receiver_transactions) {
-    transactions[receiver_transaction['receiver-document']].push(receiver_transaction);
+    transaction_history[receiver_transaction['receiver-document']].push(receiver_transaction);
   } else {
-    transactions[receiver_transaction['receiver-document']] = [receiver_transaction];
+    transaction_history[receiver_transaction['receiver-document']] = [receiver_transaction];
   }
 }
