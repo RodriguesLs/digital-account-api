@@ -5,8 +5,8 @@ if (!transactions) {
   var transaction_history = {};
 }
 
-exports.getQttTransactions = () => {
-  return transactions.length;
+exports.list = () => {
+  return transactions;
 }
 
 exports.create = transaction => {

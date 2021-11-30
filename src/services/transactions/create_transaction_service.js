@@ -2,23 +2,28 @@ const account = require('../../models/account');
 const transactionModel = require('../../models/transaction');
 
 exports.create = transaction => {
-  if (transactionModel.getQttTransactions() > 0) {
-    if (accountNotExists(transaction)) {
-      return { violation: 'account_not_initialized' }
-    } else if (insufficientLimit(transaction)) {
-      return { violation: 'insufficient_limit' }
-    } else if (preventDuplicatedTransaction(transaction)) {
-      return { violation: 'double_transaction' }
-    } else {
-      return transactionModel.create(transaction);
-    }
+  if (accountNotExists(transaction))
+    return violationError('account_not_initialized');
+
+  if (transactionModel.list().length > 0) {
+    return checkConditions(transaction);
   } else {
-    if (accountNotExists(transaction)) {
-      return { violation: 'account_not_initialized' }
-    } else {
-      return transactionModel.create(transaction);
-    }
+    return transactionModel.create(transaction);
   }
+}
+
+const checkConditions = transaction => {
+  if (insufficientLimit(transaction)) {
+    return violationError('insufficient_limit')
+  } else if (preventDuplicatedTransaction(transaction)) {
+    return violationError('double_transaction')
+  } else {
+    return transactionModel.create(transaction);
+  }
+}
+
+const violationError = err => {
+  return { violation: err }
 }
 
 const insufficientLimit = transaction => {
@@ -41,7 +46,7 @@ const accountNotExists = transaction => {
 }
 
 const preventDuplicatedTransaction = transaction => {
-  let warning_transaction = transactions.find(t => {
+  let warning_transaction = transactionModel.list().find(t => {
     let current_t = JSON.parse(t);
 
     return (current_t.value === transaction.value &&

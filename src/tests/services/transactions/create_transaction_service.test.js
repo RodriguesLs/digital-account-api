@@ -3,16 +3,59 @@ const listTransactionService = require('../../../services/transactions/list_tran
 const account = require('../../../models/account');
 
 describe('Create transaction service test', () => {
-  let new_transaction = { 'sender-document': '111.111.111-11', 'receiver-document': '999.999.999-99', value: 100 };
   let new_account = { name: 'test', document: '111.111.111-11', "available-limit": 300 }
-  let new_account2 = { name: 'test', document: '999.999.999-99', "available-limit": 300 }
+  let new_account2 = { name: 'test2', document: '999.999.999-99', "available-limit": 300 }
 
   account.create(new_account);
   account.create(new_account2);
-
+  
   it('Should create a transaction', () => {
-    createTransactionService.create(new_transaction);
+    let new_transaction = {
+      'sender-document': new_account.document,
+      'receiver-document': new_account2.document,
+      value: 100
+    };
 
+    createTransactionService.create(new_transaction);
+    
     expect(listTransactionService.getQttTransactions()).toEqual(1);
+  });
+  
+  it('Should not create a transaction, account not exists', () => {
+    let unknow_account = { name: 'test3', document: '154.548.889-99', "available-limit": 100 }
+    let fail_transaction = {
+      'sender-document': unknow_account.document,
+      'receiver-document': new_account2.document,
+      value: 100
+    };
+
+    const response = createTransactionService.create(fail_transaction);
+
+    expect(response).toEqual({ violation: 'account_not_initialized' });
+  });
+
+  it('Should not create a transaction, insufficient limit', () => {
+    let fail_transaction = {
+      'sender-document': new_account.document,
+      'receiver-document': new_account2.document,
+      value: 1000
+    };
+
+    const response = createTransactionService.create(fail_transaction);
+
+    expect(response).toEqual({ violation: 'insufficient_limit' });
+  });
+
+  it('Should not create a transaction, double_transaction', () => {
+    let new_transaction = {
+      'sender-document': new_account.document,
+      'receiver-document': new_account2.document,
+      value: 100
+    };
+
+    createTransactionService.create(new_transaction);
+    let response = createTransactionService.create(new_transaction);
+    
+    expect(response).toEqual({ violation: 'double_transaction' });
   });
 });
