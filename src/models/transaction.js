@@ -56,9 +56,9 @@ const registerTransaction = transaction => {
   updateSenderHistory(response_transaction);
   updateReceiverHistory(response_transaction, new_receiver_limit);
 
-  response_transaction = JSON.parse(response_transaction);
-  
   transactions.push(response_transaction);
+
+  response_transaction = JSON.parse(response_transaction);
 
   delete response_transaction['value'];
 
@@ -66,14 +66,16 @@ const registerTransaction = transaction => {
 }
 
 const preventDuplicatedTransaction = transaction => {
-  let warning_transaction = transaction_history.find(t => {
-    return t.value === transaction.value &&
-      t['sender-document'] === transaction['sender-document'] &&
-        t['receiver-document'] === transaction['receiver-document']
+  let warning_transaction = transactions.find(t => {
+    let current_t = JSON.parse(t);
+
+    return (current_t.value === transaction.value &&
+      current_t['sender-document'] === transaction['sender-document'] &&
+        current_t['receiver-document'] === transaction['receiver-document']);
   });
 
   if (warning_transaction) {
-    return ((new Date() - new Date(warning_transaction.datetime)) < 120000); 
+    return ((new Date() - new Date(JSON.parse(warning_transaction).datetime)) < 120000); 
   } else {
     return false;
   }
