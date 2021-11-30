@@ -7,9 +7,9 @@ exports.showQuantity = () => {
 
 exports.perform = document => {
   let customer_account = account.getAccounts().find(acc => acc.document === document);
-  
+  console.log('history', transaction.history[document]);
   if (customer_account) {
-    return transaction.history[document];
+    return transaction.history(document);
   } else {
     return { violation: 'account_not_initialized' }
   }
