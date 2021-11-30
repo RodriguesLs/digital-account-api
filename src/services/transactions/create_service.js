@@ -27,13 +27,7 @@ const prepareTransactionCreate = transaction => {
 }
 
 const updateAccount = (type, transaction) => {
-  let document;
-
-  if (type === 'receiver') {
-    document = transaction['receiver-document']
-  } else {
-    document = transaction['sender-document']
-  }
+  let document = (type === 'receiver') ? transaction['receiver-document'] : transaction['sender-document'];
 
   return updateAccountService.perform(document, type, transaction.value);
 }
