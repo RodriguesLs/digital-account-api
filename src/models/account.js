@@ -2,11 +2,11 @@ if (!accounts) {
     var accounts = [];
 }
 
-exports.getAccounts = () => {
+exports.all = () => {
     return accounts;
 }
 
-exports.cleanAccounts = () => {
+exports.destroyAll = () => {
     accounts = [];
 }
 

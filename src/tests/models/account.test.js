@@ -1,12 +1,20 @@
 const account = require('../../models/account');
 
 describe('Account model tests', () => {
-  const new_account = { name: 'test', document: '123456', "available-limit": 300 }
+  let new_account;
+  
+  beforeEach(() => {
+    new_account = { name: 'test', document: '123456', "available-limit": 300 }
+  });
+
+  afterEach(() => {
+    account.destroyAll();
+  });
 
   it('Should create an account', () => {
     account.create(new_account);
 
-    expect(account.getAccounts().length).toEqual(1);
+    expect(account.all().length).toEqual(1);
   });
   
   it('Should return all exists accounts', () => {
@@ -14,7 +22,7 @@ describe('Account model tests', () => {
       account.create({ name: `test${i}`, document: `12345${i}`, "available-limit": (10 * i) });
     }
 
-    expect(account.getAccounts().length).toEqual(4);
+    expect(account.all().length).toEqual(3);
   });
 
   it('Should update available-limit of an account', () => {
@@ -22,7 +30,7 @@ describe('Account model tests', () => {
 
     account.updateSenderAvailableLimit(new_account, 100);
 
-    expect(account.getAccounts()[0]['available-limit']).toEqual(200);
+    expect(account.all()[0]['available-limit']).toEqual(200);
   });
 
   it('Should update available-limit of an account', () => {
@@ -30,6 +38,6 @@ describe('Account model tests', () => {
 
     account.updateReceiverAvailableLimit(new_account, 100);
 
-    expect(account.getAccounts()[0]['available-limit']).toEqual(300);
+    expect(account.all()[0]['available-limit']).toEqual(400);
   });
 });
