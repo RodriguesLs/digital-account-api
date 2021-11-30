@@ -2,7 +2,6 @@ const currentTransaction = require('../services/batch_operation/current_transact
 const createTransactionService = require('../services/transactions/create_service');
 const listTransactionHistoryService = require('../services/transactions/list_history_service');
 const createAccountService = require('../services/accounts/create_service');
-const transaction = require('../models/transaction');
 
 exports.initialize = req => {
   const { payload } = req.body;

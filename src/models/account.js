@@ -1,13 +1,13 @@
 if (!accounts) {
-    var accounts = [];
+  var accounts = [];
 }
 
 exports.all = () => {
-    return accounts;
+  return accounts;
 }
 
 exports.destroyAll = () => {
-    accounts = [];
+  accounts = [];
 }
 
 exports.create = account => {
@@ -16,18 +16,8 @@ exports.create = account => {
   return account;
 }
 
-exports.updateSenderAvailableLimit = (account, debit_value) => {
-    let i = accounts.findIndex(acc => acc.document === account.document);
+exports.update = (account_id, value) => {
+  accounts[account_id]['available-limit'] += value;
 
-    accounts[i]['available-limit'] -= debit_value;
-
-    return accounts[i]['available-limit'];
-}
-
-exports.updateReceiverAvailableLimit = (account, credit_value) => {
-    let i = accounts.findIndex(acc => acc.document === account.document);
-    
-    accounts[i]['available-limit'] += credit_value;
-    
-    return accounts[i]['available-limit'];
+  return accounts[account_id]['available-limit'];
 }

@@ -28,15 +28,7 @@ describe('Account model tests', () => {
   it('Should update available-limit of an account', () => {
     account.create(new_account);
 
-    account.updateSenderAvailableLimit(new_account, 100);
-
-    expect(account.all()[0]['available-limit']).toEqual(200);
-  });
-
-  it('Should update available-limit of an account', () => {
-    account.create(new_account);
-
-    account.updateReceiverAvailableLimit(new_account, 100);
+    account.update(0, 100);
 
     expect(account.all()[0]['available-limit']).toEqual(400);
   });

@@ -1,6 +1,6 @@
 const account = require('../../models/account');
 const transactionModel = require('../../models/transaction');
-const listTransactionHistoryService = require('./list_history_service');
+const updateAccountService = require('../../services/accounts/update_service');
 
 exports.create = transaction => {
   if (accountNotExists(transaction))
@@ -16,8 +16,8 @@ exports.create = transaction => {
 const prepareTransactionCreate = transaction => {
   transaction.datetime = new Date();
 
-  let receiverLimit = updateReceiverLimit(transaction);
-  transaction['available-limit'] = updateAccountLimit(transaction);
+  let receiverLimit = updateAccountService.perform(transaction['receiver-document'], 'receiver', transaction.value);
+  transaction['available-limit'] = updateAccountService.perform(transaction['sender-document'], 'sender', transaction.value);
 
   let responseTransaction = JSON.stringify(transaction);
 
@@ -47,18 +47,6 @@ const updateReceiverHistory = (receiverTransaction, new_limit) => {
     receiverTransaction['receiver-document'],
     receiverTransaction
   );
-}
-
-const updateAccountLimit = transaction => {
-  let sender = account.all().find(acc => acc.document === transaction['sender-document']);
-
-  return account.updateSenderAvailableLimit(sender, transaction.value);
-}
-
-const updateReceiverLimit = transaction => {
-  let receiver = account.all().find(acc => acc.document === transaction['receiver-document']);
-
-  return account.updateReceiverAvailableLimit(receiver, transaction.value);
 }
 
 const checkConditions = transaction => {
