@@ -1,5 +1,5 @@
 const account = require('../models/account');
-const transaction = require('../models/transaction');
+const createTransactionService = require('../services/transactions/create_transaction_service');
 const currentTransaction = require('../services/batch_operation/current_transaction_service');
 
 exports.initialize = req => {
@@ -16,7 +16,7 @@ const initializeAccount = operation => {
 }
 
 const execute_transaction = operation => {
-  let result = transaction.create(operation.payload);
+  let result = createTransactionService.create(operation.payload);
 
   return preparePayload(result, operation.type);
 }
