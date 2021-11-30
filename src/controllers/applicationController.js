@@ -1,5 +1,6 @@
 const currentTransaction = require('../services/batch_operation/current_transaction_service');
 const createTransactionService = require('../services/transactions/create_service');
+const listTransactionHistoryService = require('../services/transactions/list_history_service');
 const createAccountService = require('../services/accounts/create_service');
 const transaction = require('../models/transaction');
 
@@ -23,7 +24,7 @@ const executeTransaction = operation => {
 }
 
 const transactionHistory = operation => {
-  let result = transaction.history(operation.payload.document);
+  let result = listTransactionHistoryService.perform(operation.payload.document);
 
   return preparePayload(result, operation.type);
 }
