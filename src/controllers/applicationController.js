@@ -1,6 +1,6 @@
-const account = require('../models/account');
-const createTransactionService = require('../services/transactions/create_service');
 const currentTransaction = require('../services/batch_operation/current_transaction_service');
+const createTransactionService = require('../services/transactions/create_service');
+const createAccountService = require('../services/accounts/create_service');
 const transaction = require('../models/transaction');
 
 exports.initialize = req => {
@@ -11,18 +11,18 @@ exports.initialize = req => {
 }
 
 const initializeAccount = operation => {
-  let result = account.create(operation.payload);
+  let result = createAccountService.perform(operation.payload);
 
   return preparePayload(result, operation.type);
 }
 
-const execute_transaction = operation => {
+const executeTransaction = operation => {
   let result = createTransactionService.create(operation.payload);
 
   return preparePayload(result, operation.type);
 }
 
-const transaction_history = operation => {
+const transactionHistory = operation => {
   let result = transaction.history(operation.payload.document);
 
   return preparePayload(result, operation.type);
@@ -44,11 +44,11 @@ const selectOperationAndExecute = data => {
         
         break;
       case('transaction'):
-        currentTransaction.appendTransaction(execute_transaction(operation));
+        currentTransaction.appendTransaction(executeTransaction(operation));
 
         break;
       case('transaction_history'):
-        currentTransaction.appendTransaction(transaction_history(operation));
+        currentTransaction.appendTransaction(transactionHistory(operation));
 
         break;
       default:
