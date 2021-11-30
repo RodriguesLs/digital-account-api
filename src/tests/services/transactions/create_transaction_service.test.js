@@ -3,7 +3,7 @@ const listTransactionService = require('../../../services/transactions/list_tran
 const account = require('../../../models/account');
 
 describe('Create transaction service test', () => {
-  let new_account = { name: 'test', document: '111.111.111-11', "available-limit": 300 }
+  let new_account = { name: 'test', document: '111.111.111-11', "available-limit": 400 }
   let new_account2 = { name: 'test2', document: '999.999.999-99', "available-limit": 300 }
 
   account.create(new_account);
@@ -18,7 +18,19 @@ describe('Create transaction service test', () => {
 
     createTransactionService.create(new_transaction);
     
-    expect(listTransactionService.getQttTransactions()).toEqual(1);
+    expect(listTransactionService.showQuantity()).toEqual(1);
+  });
+
+  it('Should create a transaction after one transaction already exists', () => {
+    let new_transaction = {
+      'sender-document': new_account.document,
+      'receiver-document': new_account2.document,
+      value: 200
+    };
+
+    createTransactionService.create(new_transaction);
+    
+    expect(listTransactionService.showQuantity()).toEqual(2);
   });
   
   it('Should not create a transaction, account not exists', () => {

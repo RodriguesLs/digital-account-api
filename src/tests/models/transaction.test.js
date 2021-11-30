@@ -1,16 +1,22 @@
 const transaction = require('../../models/transaction');
 const account = require('../../models/account');
+const listTransactionHistoryService = require('../../services/transactions/list_transaction_history_service');
 
 describe('Transaction model test', () => {
-  let new_transaction = { 'sender-document': '111.111.111-11', 'receiver-document': '999.999.999-99', value: 100 };
-  let new_account = { name: 'test', document: '111.111.111-11', "available-limit": 300 }
-  let new_account2 = { name: 'test', document: '999.999.999-99', "available-limit": 300 }
+  let sender_account = { name: 'test', document: '111.111.111-11', "available-limit": 300 }
+  let receiver_account = { name: 'test', document: '999.999.999-99', "available-limit": 300 }
+  let new_transaction = {
+    'sender-document': sender_account.document,
+    'receiver-document': receiver_account.document,
+    datetime: new Date(),
+    value: 100
+  };
 
-  account.create(new_account);
-  account.create(new_account2);
+  account.create(sender_account);
+  account.create(receiver_account);
 
   it('Should register a transaction', () => {
-    expect(transaction.getQttTransactions()).toEqual(0);
+    expect(listTransactionHistoryService.showQuantity()).toEqual(0);
 
     let response = transaction.create(new_transaction);
 
@@ -19,7 +25,7 @@ describe('Transaction model test', () => {
   });
 
   it('Should register sender-transaction correctly', () => {
-    let response = transaction.history(new_account.document);
+    let response = transaction.history(sender_account.document);
 
     expect(response).toEqual([{
       "sender-document": "111.111.111-11",
@@ -31,7 +37,7 @@ describe('Transaction model test', () => {
   });
 
   it('Should register receiver-transaction correctly', () => {
-    let response = transaction.history(new_account2.document);
+    let response = transaction.history(receiver_account.document);
 
     expect(response).toEqual([{
       "receiver-document": "999.999.999-99",

@@ -1,5 +1,6 @@
 const account = require('../../models/account');
 const transactionModel = require('../../models/transaction');
+const listTransactionHistoryService = require('./list_transaction_history_service');
 
 exports.create = transaction => {
   if (accountNotExists(transaction))
@@ -8,8 +9,56 @@ exports.create = transaction => {
   if (transactionModel.list().length > 0) {
     return checkConditions(transaction);
   } else {
-    return transactionModel.create(transaction);
+    return prepareTransactionCreate(transaction);
   }
+}
+
+const prepareTransactionCreate = transaction => {
+  transaction.datetime = new Date();
+
+  let receiverLimit = updateReceiverLimit(transaction);
+  transaction['available-limit'] = updateAccountLimit(transaction);
+
+  let responseTransaction = JSON.stringify(transaction);
+
+  updateSenderHistory(responseTransaction);
+  updateReceiverHistory(responseTransaction, receiverLimit);
+
+  return transactionModel.create(responseTransaction);
+}
+
+const updateSenderHistory = senderTransaction => {
+  senderTransaction = JSON.parse(senderTransaction);
+
+  senderTransaction.value = -senderTransaction.value;
+
+  transactionModel.createHistory(
+    senderTransaction['sender-document'],
+    senderTransaction
+  );
+}
+
+const updateReceiverHistory = (receiverTransaction, new_limit) => {
+  receiverTransaction = JSON.parse(receiverTransaction);
+
+  receiverTransaction['available-limit'] = new_limit;
+
+  transactionModel.createHistory(
+    receiverTransaction['receiver-document'],
+    receiverTransaction
+  );
+}
+
+const updateAccountLimit = transaction => {
+  let sender = account.getAccounts().find(acc => acc.document === transaction['sender-document']);
+
+  return account.updateSenderAvailableLimit(sender, transaction.value);
+}
+
+const updateReceiverLimit = transaction => {
+  let receiver = account.getAccounts().find(acc => acc.document === transaction['receiver-document']);
+
+  return account.updateReceiverAvailableLimit(receiver, transaction.value);
 }
 
 const checkConditions = transaction => {
@@ -18,7 +67,7 @@ const checkConditions = transaction => {
   } else if (preventDuplicatedTransaction(transaction)) {
     return violationError('double_transaction')
   } else {
-    return transactionModel.create(transaction);
+    return prepareTransactionCreate(transaction);
   }
 }
 
