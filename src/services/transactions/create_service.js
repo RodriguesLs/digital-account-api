@@ -1,6 +1,6 @@
 const account = require('../../models/account');
 const transactionModel = require('../../models/transaction');
-const listTransactionHistoryService = require('./list_transaction_history_service');
+const listTransactionHistoryService = require('./list_history_service');
 
 exports.create = transaction => {
   if (accountNotExists(transaction))

@@ -1,6 +1,6 @@
 const transaction = require('../../models/transaction');
 const account = require('../../models/account');
-const listTransactionHistoryService = require('../../services/transactions/list_transaction_history_service');
+const listTransactionHistoryService = require('../../services/transactions/list_history_service');
 
 describe('Transaction model test', () => {
   let sender_account = { name: 'test', document: '111.111.111-11', "available-limit": 300 }

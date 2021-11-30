@@ -1,5 +1,5 @@
-const createTransactionService = require('../../../services/transactions/create_transaction_service');
-const listTransactionService = require('../../../services/transactions/list_transaction_history_service');
+const createTransactionService = require('../../../services/transactions/create_service');
+const listTransactionService = require('../../../services/transactions/list_history_service');
 const account = require('../../../models/account');
 
 describe('Create transaction service test', () => {

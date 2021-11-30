@@ -1,5 +1,5 @@
-const listTransactionHistoryService = require('../../../services/transactions/list_transaction_history_service');
-const createTransactionService = require('../../../services/transactions/create_transaction_service');
+const listTransactionHistoryService = require('../../../services/transactions/list_history_service');
+const createTransactionService = require('../../../services/transactions/create_service');
 const account = require('../../../models/account');
 
 let sender = { name: 'test', document: '111.111.111-11', "available-limit": 400 }

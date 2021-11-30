@@ -1,5 +1,5 @@
 const account = require('../models/account');
-const createTransactionService = require('../services/transactions/create_transaction_service');
+const createTransactionService = require('../services/transactions/create_service');
 const currentTransaction = require('../services/batch_operation/current_transaction_service');
 const transaction = require('../models/transaction');
 
