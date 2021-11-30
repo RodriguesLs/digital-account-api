@@ -50,13 +50,13 @@ const updateReceiverHistory = (receiverTransaction, new_limit) => {
 }
 
 const updateAccountLimit = transaction => {
-  let sender = account.getAccounts().find(acc => acc.document === transaction['sender-document']);
+  let sender = account.all().find(acc => acc.document === transaction['sender-document']);
 
   return account.updateSenderAvailableLimit(sender, transaction.value);
 }
 
 const updateReceiverLimit = transaction => {
-  let receiver = account.getAccounts().find(acc => acc.document === transaction['receiver-document']);
+  let receiver = account.all().find(acc => acc.document === transaction['receiver-document']);
 
   return account.updateReceiverAvailableLimit(receiver, transaction.value);
 }
@@ -76,7 +76,7 @@ const violationError = err => {
 }
 
 const insufficientLimit = transaction => {
-  const accounts = account.getAccounts();
+  const accounts = account.all();
 
   let sender = accounts.find(acc => acc.document == transaction['sender-document']);
 
@@ -84,7 +84,7 @@ const insufficientLimit = transaction => {
 }
 
 const accountNotExists = transaction => {
-  const accounts = account.getAccounts();
+  const accounts = account.all();
 
   if (accounts.length == 0) return true;
 

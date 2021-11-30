@@ -17,7 +17,7 @@ const missingParameter = account => {
 }
 
 const accountExists = document => {
-  return (accountModel.getAccounts().filter(a => a.document == document).length > 0);
+  return (accountModel.all().filter(a => a.document == document).length > 0);
 }
 
 const violation_data = err => ({ violation: err }); 

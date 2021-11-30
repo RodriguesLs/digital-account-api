@@ -6,7 +6,7 @@ exports.showQuantity = () => {
 };
 
 exports.perform = document => {
-  let customer_account = account.getAccounts().find(acc => acc.document === document);
+  let customer_account = account.all().find(acc => acc.document === document);
 
   if (customer_account) {
     return transaction.history(document);
