@@ -16,15 +16,26 @@ exports.create = transaction => {
 const prepareTransactionCreate = transaction => {
   transaction.datetime = new Date();
 
-  let receiverLimit = updateAccountService.perform(transaction['receiver-document'], 'receiver', transaction.value);
-  transaction['available-limit'] = updateAccountService.perform(transaction['sender-document'], 'sender', transaction.value);
+  transaction['available-limit'] = updateAccount('sender', transaction);
 
   let responseTransaction = JSON.stringify(transaction);
 
   updateSenderHistory(responseTransaction);
-  updateReceiverHistory(responseTransaction, receiverLimit);
+  updateReceiverHistory(responseTransaction, updateAccount('receiver', transaction));
 
   return transactionModel.create(responseTransaction);
+}
+
+const updateAccount = (type, transaction) => {
+  let document;
+
+  if (type === 'receiver') {
+    document = transaction['receiver-document']
+  } else {
+    document = transaction['sender-document']
+  }
+
+  return updateAccountService.perform(document, type, transaction.value);
 }
 
 const updateSenderHistory = senderTransaction => {
